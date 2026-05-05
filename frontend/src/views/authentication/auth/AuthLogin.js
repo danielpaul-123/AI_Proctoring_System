@@ -78,8 +78,8 @@ const AuthLogin = ({ formik, title, subtitle, subtext }) => {
             <FormControlLabel control={<Checkbox defaultChecked />} label="Remember this Device" />
           </FormGroup>
           <Typography
-            // component={Link}
-            // to="/"
+            component={Link}
+            to="/auth/forgot-password"
             fontWeight="500"
             sx={{
               textDecoration: 'none',

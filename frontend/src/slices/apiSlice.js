@@ -4,7 +4,7 @@ const baseQuery = fetchBaseQuery({ baseUrl: '' });
 
 export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BACKEND_URL,
+    baseUrl: process.env.REACT_APP_BACKEND_URL || '',
     credentials: 'include',
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');

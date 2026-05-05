@@ -12,6 +12,9 @@ import fs from "fs";
 import { writeFileSync } from "fs";
 import path from "path";
 import cors from "cors";
+import crypto from "crypto";
+import os from "os";
+
 dotenv.config();
 connectDB();
 const app = express();
@@ -34,11 +37,13 @@ app.use(
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
 
-app.post("/run-python", (req, res) => {
+app.post("/api/run-python", (req, res) => {
   const { code } = req.body; // Get Python code from request body
-  writeFileSync("script.py", code); // Write code to script.py file
+  const filename = path.join(os.tmpdir(), `script_${crypto.randomUUID()}.py`);
+  writeFileSync(filename, code); // Write code to unique file
 
-  exec("python script.py", (error, stdout, stderr) => {
+  exec(`python ${filename}`, (error, stdout, stderr) => {
+    fs.unlink(filename, () => {}); // Cleanup
     if (error) {
       res.send(`Error is: ${stderr}`); // Send error message if any
     } else {
@@ -47,11 +52,13 @@ app.post("/run-python", (req, res) => {
   });
 });
 
-app.post("/run-javascript", (req, res) => {
+app.post("/api/run-javascript", (req, res) => {
   const { code } = req.body; // Get JavaScript code from request body
-  writeFileSync("script.js", code); // Write code to script.js file
+  const filename = path.join(os.tmpdir(), `script_${crypto.randomUUID()}.js`);
+  writeFileSync(filename, code); // Write code to unique file
 
-  exec("node script.js", (error, stdout, stderr) => {
+  exec(`node ${filename}`, (error, stdout, stderr) => {
+    fs.unlink(filename, () => {}); // Cleanup
     if (error) {
       res.send(`Error: ${stderr}`); // Send error message if any
     } else {
@@ -60,11 +67,15 @@ app.post("/run-javascript", (req, res) => {
   });
 });
 
-app.post("/run-java", (req, res) => {
+app.post("/api/run-java", (req, res) => {
   const { code } = req.body; // Get Java code from request body
-  writeFileSync("Main.java", code); // Write code to Main.java file
+  const dir = path.join(os.tmpdir(), `temp_${crypto.randomUUID()}`);
+  fs.mkdirSync(dir);
+  const filepath = path.join(dir, "Main.java");
+  writeFileSync(filepath, code); // Write code to Main.java inside unique directory
 
-  exec("javac Main.java && java Main", (error, stdout, stderr) => {
+  exec(`javac ${filepath} && java -cp ${dir} Main`, (error, stdout, stderr) => {
+    fs.rm(dir, { recursive: true, force: true }, () => {}); // Cleanup
     if (error) {
       res.send(`Error: ${stderr}`); // Send error message if any
     } else {
@@ -84,12 +95,12 @@ app.use("/api/coding", codingRoutes);
 if (process.env.NODE_ENV === "production") {
   const __dirname = path.resolve();
   // we making front build folder static to serve from this app
-  app.use(express.static(path.join(__dirname, "/frontend/dist")));
+  app.use(express.static(path.join(__dirname, "/frontend/build")));
 
   // if we get an routes that are not define by us we show then index html file
   // every enpoint that is not api/users go to this index file
   app.get("*", (req, res) =>
-    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"))
+    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"))
   );
 } else {
   app.get("/", (req, res) => {

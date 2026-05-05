@@ -79,13 +79,13 @@ export default function Coder() {
     let apiUrl;
     switch (language) {
       case 'python':
-        apiUrl = '/run-python';
+        apiUrl = '/api/run-python';
         break;
       case 'java':
-        apiUrl = '/run-java';
+        apiUrl = '/api/run-java';
         break;
       case 'javascript':
-        apiUrl = '/run-javascript';
+        apiUrl = '/api/run-javascript';
         break;
       default:
         return;

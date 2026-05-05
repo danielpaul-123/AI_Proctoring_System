@@ -28,6 +28,8 @@ const Coder = Loadable(lazy(() => import('../views/student/Coder')));
 const Error = Loadable(lazy(() => import('../views/authentication/Error')));
 const Register = Loadable(lazy(() => import('../views/authentication/Register')));
 const Login = Loadable(lazy(() => import('../views/authentication/Login')));
+const ForgotPassword = Loadable(lazy(() => import('../views/authentication/ForgotPassword')));
+const ResetPassword = Loadable(lazy(() => import('../views/authentication/ResetPassword')));
 const UserAccount = Loadable(lazy(() => import('../views/authentication/UserAccount')));
 
 // Teacher Routes
@@ -75,6 +77,8 @@ const Router = createBrowserRouter(
         <Route path="404" element={<Error />} />
         <Route path="/auth/register" element={<Register />} />
         <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+        <Route path="/auth/reset-password/:token" element={<ResetPassword />} />
         {/* <Route path="*" element={<Navigate to="/auth/404" />} /> */}
       </Route>
     </>,
